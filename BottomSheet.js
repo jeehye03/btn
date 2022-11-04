@@ -80,6 +80,7 @@ const BottomSheet = props => {
           }}
           {...panResponders.panHandlers}>
           <ScrollView style={styles.container}>
+            <TouchableWithoutFeedback>
             <Text style={styles.text}>
               Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
               eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
@@ -89,6 +90,7 @@ const BottomSheet = props => {
               nulla pariatur. Excepteur sint occaecat cupidatat non proident,
               sunt in culpa qui officia deserunt mollit anim id est laborum.
             </Text>
+            </TouchableWithoutFeedback>
           </ScrollView>
         </Animated.View>
       </View>
@@ -106,12 +108,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   bottomSheetContainer: {
-    minHeight: 300,
+    minHeight: 350,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'white',
-    borderTopLeftRadius: 15,
-    borderTopRightRadius: 15,
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
+    paddingTop:20
   },
   text: {
     padding: 15,
@@ -119,7 +122,6 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    // paddingTop: StatusBar.currentHeight,
   },
   scroll: {
     backgroundColor: 'pink',

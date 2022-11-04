@@ -1,5 +1,17 @@
 import {useEffect, useRef, useState} from 'react';
-import {Text, View, StyleSheet, Animated, Pressable, Button} from 'react-native';
+import {
+  Text,
+  View,
+  StyleSheet,
+  Animated,
+  Pressable,
+  Button,
+  TextInput,
+  KeyboardAvoidingView,
+  SafeAreaView,
+  TouchableWithoutFeedback,
+  Keyboard,
+} from 'react-native';
 import Test from './assets/test.svg';
 import Arrow from './assets/arrowDown.svg';
 
@@ -9,7 +21,7 @@ const HomeScreen = ({navigation}) => {
 
   const [fadeIn, setFadeIn] = useState(false);
   const [rotate, setRotate] = useState('0deg');
-  const [count,setCount] = useState(1);
+  const [count, setCount] = useState(1);
 
   const handlePress = () => {
     Animated.timing(fadeAnim, {
@@ -27,12 +39,12 @@ const HomeScreen = ({navigation}) => {
   };
 
   const addPress = () => {
-    setCount(count + 1)
-  }
-  
+    setCount(count + 1);
+  };
+
   const minusPress = () => {
-    setCount((prev) => (prev <= 1 ? 1 : prev - 1 ))
-  }
+    setCount(prev => (prev <= 1 ? 1 : prev - 1));
+  };
 
   useEffect(() => {
     setRotate(
@@ -44,39 +56,43 @@ const HomeScreen = ({navigation}) => {
   }, [rotateAnim]);
 
   return (
-    <View style={styles.container}>
-      <Button title="bottomSheet" onPress={() => navigation.push('Styled')}/>
-      <View>
-        <Pressable style={styles.touch} onPress={handlePress}>
-          <Test />
-          <Animated.View
-            style={{
-              transform: [{rotate: rotate}],
-              position: 'absolute',
-              top: 5,
-              right: 24,
-            }}>
-            <Arrow />
-          </Animated.View>
-        </Pressable>
-      </View>
-      <View style={styles.innerContainer}>
-        <Animated.View style={{height: fadeAnim}}>
-          <View style={styles.anim}>
-            <View style={styles.inner}>
-              <Text onPress={minusPress}>-</Text>
-              <Text>{count}</Text>
-              <Text onPress={addPress}>+</Text>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.container}>
+        <Button title="bottomSheet" onPress={() => navigation.push('Styled')} />
+
+        <View style={styles.touch}>
+          <Pressable onPress={handlePress}>
+            <Test />
+            <Animated.View
+              style={{
+                transform: [{rotate: rotate}],
+                position: 'absolute',
+                top: 5,
+                right: 24,
+              }}>
+              <Arrow />
+            </Animated.View>
+          </Pressable>
+        </View>
+
+        <View style={styles.innerContainer}>
+          <Animated.View style={{height: fadeAnim}}>
+            <View style={styles.anim}>
+              <View style={styles.inner}>
+                <Text onPress={minusPress}>-</Text>
+                <TextInput keyboardType="number-pad">{count}</TextInput>
+                <Text onPress={addPress}>+</Text>
+              </View>
             </View>
-          </View>
-        </Animated.View>
-        <Pressable style={styles.button}>
-          <Text style={styles.text}>
-            {fadeIn ? '장바구니에 담기' : '1개 담기'}
-          </Text>
-        </Pressable>
-      </View>
-    </View>
+          </Animated.View>
+          <Pressable style={styles.button}>
+            <Text style={styles.text}>
+              {fadeIn ? '장바구니에 담기' : '1개 담기'}
+            </Text>
+          </Pressable>
+        </View>
+      </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
   );
 };
 
@@ -89,7 +105,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    justifyContent: 'flex-end',
+    //justifyContent: 'flex-end',
     alignItems: 'center',
     marginBottom: 100,
   },
@@ -115,10 +131,10 @@ const styles = StyleSheet.create({
   touch: {
     position: 'relative',
   },
-  innerContainer:{
+  innerContainer: {
     backgroundColor: '#fdc800',
-    borderRadius:29,
-    overflow: 'hidden'
-  }
+    borderRadius: 29,
+    overflow: 'hidden',
+  },
 });
 export default HomeScreen;
