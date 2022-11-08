@@ -8,20 +8,22 @@ import {
   Button,
   TextInput,
   KeyboardAvoidingView,
-  SafeAreaView,
   TouchableWithoutFeedback,
   Keyboard,
 } from 'react-native';
 import Test from './assets/test.svg';
 import Arrow from './assets/arrowDown.svg';
+import styled from 'styled-components';
 
 const HomeScreen = ({navigation}) => {
+  const bodyRef = useRef();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const rotateAnim = useRef(new Animated.Value(0)).current;
 
   const [fadeIn, setFadeIn] = useState(false);
   const [rotate, setRotate] = useState('0deg');
   const [count, setCount] = useState(1);
+  const [focus, setFocus] = useState(false);
 
   const handlePress = () => {
     Animated.timing(fadeAnim, {
@@ -38,12 +40,24 @@ const HomeScreen = ({navigation}) => {
     }).start();
   };
 
+  const changeText = number => {
+    setCount(number);
+  };
+
   const addPress = () => {
-    setCount(count + 1);
+    setCount(prev => Number(prev) + 1);
   };
 
   const minusPress = () => {
     setCount(prev => (prev <= 1 ? 1 : prev - 1));
+  };
+
+  const testPress = () => {
+    setFocus(true);
+  };
+
+  const blurPress = () => {
+    setFocus(false);
   };
 
   useEffect(() => {
@@ -56,45 +70,94 @@ const HomeScreen = ({navigation}) => {
   }, [rotateAnim]);
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.container}>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} onBlur={blurPress}>
+      <Container
+       
+       >
         <Button title="bottomSheet" onPress={() => navigation.push('Styled')} />
+        <BtnContainer focus={focus}>
+          <View style={styles.touch}>
+            <Pressable onPress={handlePress}>
+              <Test />
+              <Animated.View
+                style={{
+                  transform: [{rotate: rotate}],
+                  position: 'absolute',
+                  top: 5,
+                  right: 24,
+                }}>
+                <Arrow />
+              </Animated.View>
+            </Pressable>
+          </View>
 
-        <View style={styles.touch}>
-          <Pressable onPress={handlePress}>
-            <Test />
-            <Animated.View
-              style={{
-                transform: [{rotate: rotate}],
-                position: 'absolute',
-                top: 5,
-                right: 24,
-              }}>
-              <Arrow />
-            </Animated.View>
-          </Pressable>
-        </View>
-
-        <View style={styles.innerContainer}>
-          <Animated.View style={{height: fadeAnim}}>
-            <View style={styles.anim}>
-              <View style={styles.inner}>
-                <Text onPress={minusPress}>-</Text>
-                <TextInput keyboardType="number-pad">{count}</TextInput>
-                <Text onPress={addPress}>+</Text>
+          <View style={styles.innerContainer}>
+            <Animated.View style={{height: fadeAnim}}>
+              <View style={styles.anim}>
+                <View style={styles.inner}>
+                  <View>
+                    <Text style={styles.text}>7,500원</Text>
+                  </View>
+                  <View style={styles.count}>
+                    <Text style={styles.input}>
+                      <Text onPress={minusPress}>-</Text>
+                      <Text
+                        onPress={() => {
+                          testPress();
+                          bodyRef.current.focus();
+                        }}>
+                        {count}
+                      </Text>
+                      <Text onPress={addPress}>+</Text>
+                    </Text>
+                  </View>
+                </View>
               </View>
-            </View>
-          </Animated.View>
-          <Pressable style={styles.button}>
-            <Text style={styles.text}>
-              {fadeIn ? '장바구니에 담기' : '1개 담기'}
-            </Text>
-          </Pressable>
-        </View>
-      </KeyboardAvoidingView>
+            </Animated.View>
+            <Pressable style={styles.button}>
+              <Text style={styles.text}>
+                {fadeIn ? '장바구니에 담기' : '1개 담기'}
+              </Text>
+            </Pressable>
+          </View>
+        </BtnContainer>
+        <Input focus={focus}>
+          <View style={styles.count}>
+            
+            <Text onPress={minusPress}>-</Text>
+            <TextInput
+              keyboardType="number-pad"
+              onPress={testPress}
+              ref={bodyRef}
+              onChangeText={changeText}>
+              {count}
+            </TextInput>
+            <Text onPress={addPress}>+</Text>
+            
+          </View>
+        </Input>
+      </Container>
     </TouchableWithoutFeedback>
   );
 };
+
+const Input = styled.View`
+  display: ${props => (props.focus ? null : 'none')};
+  width: 100%;
+  height: 56px;
+  background-color: olive;
+  margin-bottom:190px;
+`;
+
+const Container = styled.View`
+  justify-content: flex-end;
+  align-items: center;
+  flex: 1;
+  margin-bottom: 100px;
+`;
+const BtnContainer = styled.View`
+  display: ${props => (props.focus ? 'none' : null)};
+`;
 
 const styles = StyleSheet.create({
   inner: {
@@ -102,10 +165,14 @@ const styles = StyleSheet.create({
     height: 56,
     borderTopStartRadius: 27,
     borderTopEndRadius: 27,
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    padding: 18,
+    alignItems: 'center',
   },
   container: {
     flex: 1,
-    //justifyContent: 'flex-end',
+    justifyContent: 'flex-end',
     alignItems: 'center',
     marginBottom: 100,
   },
@@ -130,11 +197,22 @@ const styles = StyleSheet.create({
   },
   touch: {
     position: 'relative',
+    flexDirection: 'row',
+    justifyContent: 'center',
   },
   innerContainer: {
     backgroundColor: '#fdc800',
     borderRadius: 29,
     overflow: 'hidden',
   },
+  count: {
+    flexDirection: 'row',
+    borderStyle:'solid',
+    
+    
+  },
+  input:{
+    fontSize:16
+  }
 });
 export default HomeScreen;
