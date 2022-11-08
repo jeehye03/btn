@@ -137,7 +137,7 @@ const HomeScreen = ({navigation}) => {
             </Pressable>
           </View>
         </BtnContainer>
-      </Container>
+      </Container> 
     </TouchableWithoutFeedback>
   );
 };
