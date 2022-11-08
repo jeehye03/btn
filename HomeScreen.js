@@ -18,7 +18,6 @@ import styled from 'styled-components';
 import NativeStatusBarManager from 'react-native/Libraries/Components/StatusBar/NativeStatusBarManagerIOS';
 
 
-
 const HomeScreen = ({navigation}) => {
   const bodyRef = useRef();
   const fadeAnim = useRef(new Animated.Value(0)).current;
