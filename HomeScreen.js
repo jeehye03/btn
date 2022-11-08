@@ -10,20 +10,22 @@ import {
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
   Keyboard,
+  Platform,
 } from 'react-native';
 import Test from './assets/test.svg';
 import Arrow from './assets/arrowDown.svg';
 import styled from 'styled-components';
+import NativeStatusBarManager from 'react-native/Libraries/Components/StatusBar/NativeStatusBarManagerIOS';
 
 const HomeScreen = ({navigation}) => {
   const bodyRef = useRef();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const rotateAnim = useRef(new Animated.Value(0)).current;
-
   const [fadeIn, setFadeIn] = useState(false);
   const [rotate, setRotate] = useState('0deg');
   const [count, setCount] = useState(1);
   const [focus, setFocus] = useState(false);
+  const [statusBarHeight, setStatusBarHeight] = useState(0);
 
   const handlePress = () => {
     Animated.timing(fadeAnim, {
@@ -32,34 +34,27 @@ const HomeScreen = ({navigation}) => {
       useNativeDriver: false,
     }).start();
     setFadeIn(prev => !prev);
-
     Animated.timing(rotateAnim, {
       toValue: fadeIn ? 0 : 1,
       duration: 300,
       useNativeDriver: false,
     }).start();
   };
-
   const changeText = number => {
     setCount(number);
   };
-
   const addPress = () => {
     setCount(prev => Number(prev) + 1);
   };
-
   const minusPress = () => {
     setCount(prev => (prev <= 1 ? 1 : prev - 1));
   };
-
   const testPress = () => {
     setFocus(true);
   };
-
   const blurPress = () => {
     setFocus(false);
   };
-
   useEffect(() => {
     setRotate(
       rotateAnim.interpolate({
@@ -68,13 +63,35 @@ const HomeScreen = ({navigation}) => {
       }),
     );
   }, [rotateAnim]);
-
+  useEffect(() => {
+    Platform.OS == 'ios'
+      ? NativeStatusBarManager.getHeight(statusBarFrameData => {
+          setStatusBarHeight(statusBarFrameData.height);
+        })
+      : null;
+  }, []);
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} onBlur={blurPress}>
-      <Container
-       
-       >
+      <Container>
         <Button title="bottomSheet" onPress={() => navigation.push('Styled')} />
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'none'}
+          style={{width: '100%'}}
+          keyboardVerticalOffset={statusBarHeight + 44}>
+          <Input focus={focus}>
+            <View style={styles.count}>
+              <Text onPress={minusPress}>-</Text>
+              <TextInput
+                keyboardType="number-pad"
+                onPress={testPress}
+                ref={bodyRef}
+                onChangeText={changeText}>
+                {count}
+              </TextInput>
+              <Text onPress={addPress}>+</Text>
+            </View>
+          </Input>
+        </KeyboardAvoidingView>
         <BtnContainer focus={focus}>
           <View style={styles.touch}>
             <Pressable onPress={handlePress}>
@@ -90,7 +107,6 @@ const HomeScreen = ({navigation}) => {
               </Animated.View>
             </Pressable>
           </View>
-
           <View style={styles.innerContainer}>
             <Animated.View style={{height: fadeAnim}}>
               <View style={styles.anim}>
@@ -121,44 +137,25 @@ const HomeScreen = ({navigation}) => {
             </Pressable>
           </View>
         </BtnContainer>
-        <Input focus={focus}>
-          <View style={styles.count}>
-            
-            <Text onPress={minusPress}>-</Text>
-            <TextInput
-              keyboardType="number-pad"
-              onPress={testPress}
-              ref={bodyRef}
-              onChangeText={changeText}>
-              {count}
-            </TextInput>
-            <Text onPress={addPress}>+</Text>
-            
-          </View>
-        </Input>
       </Container>
     </TouchableWithoutFeedback>
   );
 };
-
 const Input = styled.View`
   display: ${props => (props.focus ? null : 'none')};
   width: 100%;
   height: 56px;
-  background-color: olive;
-  margin-bottom:190px;
+  background-color: white;
 `;
-
-const Container = styled.View`
+const Container = styled.SafeAreaView`
   justify-content: flex-end;
   align-items: center;
   flex: 1;
-  margin-bottom: 100px;
 `;
 const BtnContainer = styled.View`
   display: ${props => (props.focus ? 'none' : null)};
+  margin-bottom:100px;
 `;
-
 const styles = StyleSheet.create({
   inner: {
     backgroundColor: 'white',
@@ -174,7 +171,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-end',
     alignItems: 'center',
-    marginBottom: 100,
   },
   anim: {
     backgroundColor: '#FDC800',
@@ -201,18 +197,31 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   innerContainer: {
-    backgroundColor: '#fdc800',
+    backgroundColor: '#FDC800',
     borderRadius: 29,
     overflow: 'hidden',
   },
   count: {
-    flexDirection: 'row',
-    borderStyle:'solid',
+    flexDirection: 'row'
     
     
   },
-  input:{
-    fontSize:16
-  }
+  input: {
+    fontSize: 16,
+  },
+  textInputContainer: {
+    marginTop: 'auto',
+    borderWidth: 1,
+    borderColor: 'skyblue',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 15,
+  },
+  textInput: {
+    width: '100%',
+    fontSize: 18,
+    borderWidth: 1,
+    borderColor: 'pink',
+  },
 });
 export default HomeScreen;
