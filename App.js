@@ -5,6 +5,7 @@ import {Text, View} from 'react-native';
 import HomeScreen from './HomeScreen';
 import Icon from 'react-native-vector-icons/Feather';
 import Styled from './BottomSheetTestScreen';
+import Input from './Input';
 
 const App = () => {
   const Stack = createNativeStackNavigator();
@@ -25,6 +26,7 @@ const App = () => {
           }}
         />
         <Stack.Screen name="Styled" component={Styled} />
+        <Stack.Screen name="Input" component={Input} />
       </Stack.Navigator>
     </NavigationContainer>
   );

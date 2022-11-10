@@ -11,6 +11,7 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   Platform,
+  
 } from 'react-native';
 import Test from './assets/test.svg';
 import Arrow from './assets/arrowDown.svg';
@@ -73,12 +74,13 @@ const HomeScreen = ({navigation}) => {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} onBlur={blurPress}>
       <Container>
+        <Button title="input" onPress={()=> navigation.push('Input')}/>
         <Button title="bottomSheet" onPress={() => navigation.push('Styled')} />
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'none'}
           style={{width: '100%'}}
           keyboardVerticalOffset={statusBarHeight + 44}>
-          <Input focus={focus}>
+         <Input focus={focus}>
             <View style={styles.count}>
               <Text onPress={minusPress}>-</Text>
               <TextInput
@@ -86,13 +88,13 @@ const HomeScreen = ({navigation}) => {
                 onPress={testPress}
                 ref={bodyRef}
                 onChangeText={changeText}>
-                {count}
+                {focus && count}
               </TextInput>
               <Text onPress={addPress}>+</Text>
             </View>
           </Input>
         </KeyboardAvoidingView>
-        <BtnContainer focus={focus}>
+        {!focus && <BtnContainer focus={focus}>
           <View style={styles.touch}>
             <Pressable onPress={handlePress}>
               <Test />
@@ -136,15 +138,15 @@ const HomeScreen = ({navigation}) => {
               </Text>
             </Pressable>
           </View>
-        </BtnContainer>
+        </BtnContainer>}
       </Container> 
     </TouchableWithoutFeedback>
   );
 };
 const Input = styled.View`
-  display: ${props => (props.focus ? null : 'none')};
+  height: ${props => props.focus ? '56px' : 0 };
   width: 100%;
-  height: 56px;
+
   background-color: white;
 `;
 const Container = styled.SafeAreaView`
@@ -153,7 +155,7 @@ const Container = styled.SafeAreaView`
   flex: 1;
 `;
 const BtnContainer = styled.View`
-  display: ${props => (props.focus ? 'none' : null)};
+  
   margin-bottom:100px;
 `;
 const styles = StyleSheet.create({
